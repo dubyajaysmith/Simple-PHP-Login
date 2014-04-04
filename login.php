@@ -1,9 +1,16 @@
 <?php 
 
-//Connects to your Database 
- mysql_connect("YOUR.database.info.hostedresource.com", "YOURusername", "YOURpassword") or die(mysql_error()); 
- mysql_select_db("YOURdatabase") or die(mysql_error()); 
+//Connects to your Database
+ $database="YOUR.database.info.hostedresource.com";
+ $username="YOURusername";
+ $password="YOURpassword";
+ $db("YOURdatabase");
 
+//obj dns; above is all I need to tamper with when moving severs; DB names and tables WILL be the same;
+$dsn = "mysqli:host=$host;dbname=$database";
+ 
+//object db to call when needed;
+$db = new PDO($dsn, $user, $password);
 
  //Checks if there is a login cookie
  if(isset($_COOKIE['ID_my_site']))
@@ -15,7 +22,7 @@
 
  	$pass = $_COOKIE['Key_my_site'];
 
- 	 	$check = mysql_query("SELECT * FROM users WHERE username = '$username'")or die(mysql_error());
+ 	 	$check = ("SELECT * FROM users WHERE username = '$username'")or die(mysqli_error());
 
  	while($info = mysql_fetch_array( $check )) 	
 
@@ -66,13 +73,13 @@
 
  	}
 
- 	$check = mysql_query("SELECT * FROM users WHERE username = '".$_POST['username']."'")or die(mysql_error());
+ 	$check = "SELECT * FROM users WHERE username = '".$_POST['username']."'")or die(mysqli_error());
 
 
 
  //Gives error if user dosen't exist
 
- $check2 = mysql_num_rows($check);
+ $check2 = mysqli_num_rows($check);
 
  if ($check2 == 0) {
 
