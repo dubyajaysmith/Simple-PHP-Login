@@ -1,14 +1,23 @@
 <?php 
 //Connects to your Database 
- mysql_connect("YOUR.database.info.hostedresource.com", "YOURusername", "YOURpassword") or die(mysql_error()); 
- mysql_select_db("YOURdatabase") or die(mysql_error()); 
+ $database="YOUR.database.info.hostedresource.com";
+ $username="YOURusername";
+ $password="YOURpassword";
+ $db("YOURdatabase"); 
 
+//obj dns; above is all I need to tamper with when moving severs; DB names and tables WILL be the same;
+$dsn = "mysql:host=$host;dbname=$database";
+ 
+//object db to call when needed;
+$db = new PDO($dsn, $user, $password);
 
- //This code runs if the form has been submitted
+//dev test
+//$db->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION );
 
- if (isset($_POST['submit'])) { 
-
-
+//obj to call to put #&carr into table
+$put = "INSERT INTO fullaccounts (username,userpassword,useremail,userphone,usercarrier)
+     VALUES (:username,:userpassword,:useremail,:userphone,:usercarrier)";
+$post = $_POST['post'];
 
  //This makes sure they did not leave any fields blank
 
@@ -30,11 +39,11 @@
 
  $usercheck = $_POST['username'];
 
- $check = mysql_query("SELECT username FROM users WHERE username = '$usercheck'") 
+ $check = mysqli_query("SELECT username FROM users WHERE username = '$usercheck'") 
 
-or die(mysql_error());
+or die(mysqli_error());
 
- $check2 = mysql_num_rows($check);
+ $check2 = mysqli_num_rows($check);
 
 
 
@@ -69,15 +78,17 @@ or die(mysql_error());
 
  			}
 
+ // now insert it into the database
+ 	$stmt = $db->prepare($put);
+ 	      
+        $stmt->bindParam(':username', $_POST['username'], PDO::PARAM_STR);
+        $stmt->bindParam(':userpassword', $_POST['userpassword'], PDO::PARAM_STR);
+        $stmt->bindParam(':useremail', $_POST['useremail'], PDO::PARAM_STR);
+        $stmt->bindParam(':userphone', $_POST['userphone'], PDO::PARAM_STR);
+        $stmt->bindParam(':usercarrier', $_POST['usercarrier'], PDO::PARAM_STR);
 
+        $stmt->execute();
 
- // now we insert it into the database
-
- 	$insert = "INSERT INTO users (username, password)
-
- 			VALUES ('".$_POST['username']."', '".$_POST['pass']."')";
-
- 	$add_member = mysql_query($insert);
 
  	?>
 
@@ -91,8 +102,6 @@ or die(mysql_error());
  else 
  {	
  ?>
-
-
  
  <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
 
